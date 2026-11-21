@@ -22,6 +22,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install Pillow
+        run: pip install pillow
+
       - name: Generate Hacker News 800x480 PNG
         run: python3 scripts/generate_hn.py
 

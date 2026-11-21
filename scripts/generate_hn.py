@@ -1,5 +1,18 @@
 #!/usr/bin/env python3
-"""Generate an 800x480 E Ink Spectra 6 optimized Hacker News newspaper PNG."""
+"""Generate an 800x480 1:1 pixel-exact E Ink Spectra 6 Hacker News newspaper PNG.
+
+Every pixel in the output PNG is strictly one of the 6 theoretical Spectra 6 RGB
+values expected by esp32-photoframe's `check_processed_png()` fast path:
+  Black  (0, 0, 0)
+  White  (255, 255, 255)
+  Yellow (255, 255, 0)
+  Red    (255, 0, 0)
+  Blue   (0, 0, 255)
+  Green  (0, 255, 0)
+
+This bypasses on-device Floyd-Steinberg photo dithering completely so text and
+color blocks render with zero speckles and crisp 1:1 edges.
+"""
 
 from __future__ import annotations
 
@@ -14,15 +27,25 @@ import tempfile
 import time
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+from PIL import Image
 
 CST = timezone(timedelta(hours=8))
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_PNG = REPO_ROOT / "docs" / "hn.png"
 OUT_HTML_PREVIEW = REPO_ROOT / "docs" / "hn_render.html"
 
-USER_AGENT = "e1002-news-board/1.0 (+https://github.com/Lightningxxl/e1002-news-board)"
+USER_AGENT = "e1002-news-board/1.1 (+https://github.com/Lightningxxl/e1002-news-board)"
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+YELLOW = (255, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+EXACT_PALETTE = {BLACK, WHITE, YELLOW, RED, BLUE, GREEN}
 
 
 def http_get_json(url: str, timeout: int = 15):
@@ -31,7 +54,7 @@ def http_get_json(url: str, timeout: int = 15):
         return json.loads(resp.read().decode("utf-8"))
 
 
-def fetch_hn_algolia(limit: int = 12) -> list[dict]:
+def fetch_hn_algolia(limit: int = 10) -> list[dict]:
     data = http_get_json(
         f"https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage={limit + 4}"
     )
@@ -58,7 +81,7 @@ def fetch_hn_algolia(limit: int = 12) -> list[dict]:
     return stories
 
 
-def fetch_hn_firebase(limit: int = 12) -> list[dict]:
+def fetch_hn_firebase(limit: int = 10) -> list[dict]:
     ids = http_get_json("https://hacker-news.firebaseio.com/v0/topstories.json")[: limit + 8]
 
     def load_item(item_id: int):
@@ -94,7 +117,7 @@ def fetch_hn_firebase(limit: int = 12) -> list[dict]:
     return stories
 
 
-def fetch_stories(limit: int = 11) -> list[dict]:
+def fetch_stories(limit: int = 7) -> list[dict]:
     try:
         stories = fetch_hn_algolia(limit=limit)
         if stories:
@@ -126,7 +149,6 @@ def relative_age(ts: int, now_ts: float) -> str:
 
 
 def detect_tag(title: str) -> tuple[str, str]:
-    """Return (label, css_class) if the story has a well-known HN prefix."""
     upper = title.upper()
     if upper.startswith("SHOW HN:"):
         return "SHOW HN", "tag-blue"
@@ -149,12 +171,12 @@ def strip_prefix(title: str, tag: str) -> str:
 def build_html(stories: list[dict], now: datetime) -> str:
     now_ts = now.timestamp()
     edition = "MORNING EDITION" if now.hour < 14 else "EVENING EDITION"
-    date_str = now.strftime("%a, %b %d, %Y · %H:%M CST").upper()
+    date_str = now.strftime("%a, %b %d · %H:%M CST").upper()
 
     lead = stories[0]
-    rest = stories[1:11]
-    left_col = rest[:5]
-    right_col = rest[5:10]
+    rest = stories[1:7]
+    left_col = rest[:3]
+    right_col = rest[3:6]
 
     lead_tag, lead_tag_cls = detect_tag(lead["title"])
     lead_title = html.escape(strip_prefix(lead["title"], lead_tag))
@@ -164,7 +186,7 @@ def build_html(stories: list[dict], now: datetime) -> str:
         tag, tag_cls = detect_tag(s["title"])
         clean_title = html.escape(strip_prefix(s["title"], tag))
         tag_html = f'<span class="mini-tag {tag_cls}">{tag}</span> ' if tag else ""
-        rank_cls = "rank rank-hot" if rank <= 3 or s["points"] >= 300 else "rank"
+        rank_cls = "rank rank-hot" if rank <= 3 or s["points"] >= 500 else "rank"
         age = relative_age(s["created_at"], now_ts)
         return f"""
         <article class="story">
@@ -174,9 +196,9 @@ def build_html(stories: list[dict], now: datetime) -> str:
             <div class="story-meta">
               <span class="domain">{html.escape(s['domain'])}</span>
               <span class="dot">·</span>
-              <span class="pts">▲ {s['points']}</span>
+              <span class="pts">▲{s['points']}</span>
               <span class="dot">·</span>
-              <span class="cmts">{s['comments']} cmts</span>
+              <span class="cmts">{s['comments']}c</span>
               <span class="dot">·</span>
               <span class="age">{age}</span>
             </div>
@@ -184,22 +206,22 @@ def build_html(stories: list[dict], now: datetime) -> str:
         </article>"""
 
     left_html = "\n".join(render_story(i + 2, s) for i, s in enumerate(left_col))
-    right_html = "\n".join(render_story(i + 7, s) for i, s in enumerate(right_col))
+    right_html = "\n".join(render_story(i + 5, s) for i, s in enumerate(right_col))
 
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>The Hacker News — E1002 Edition</title>
+<title>Hacker News Daily — E1002 Spectra 6</title>
 <style>
-  /* E Ink Spectra 6 palette: pure white, pure black, red, yellow, blue, green */
+  /* Exact 6-color theoretical Spectra 6 palette */
   :root {{
     --paper: #FFFFFF;
     --ink: #000000;
-    --red: #D60000;
-    --yellow: #FFE600;
-    --blue: #0033CC;
-    --green: #007A00;
+    --red: #FF0000;
+    --yellow: #FFFF00;
+    --blue: #0000FF;
+    --green: #00FF00;
   }}
 
   * {{
@@ -214,15 +236,14 @@ def build_html(stories: list[dict], now: datetime) -> str:
     overflow: hidden;
     background: var(--paper);
     color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Inter", "Liberation Sans", Arial, sans-serif;
-    -webkit-font-smoothing: none;
-    text-rendering: geometricPrecision;
+    font-family: "Helvetica Neue", Helvetica, "Liberation Sans", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }}
 
   .page {{
     width: 800px;
     height: 480px;
-    padding: 10px 14px 8px 14px;
+    padding: 12px 16px 10px 16px;
     display: flex;
     flex-direction: column;
   }}
@@ -233,8 +254,8 @@ def build_html(stories: list[dict], now: datetime) -> str:
     align-items: center;
     justify-content: space-between;
     border-bottom: 3px solid var(--ink);
-    padding-bottom: 6px;
-    margin-bottom: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
   }}
 
   .brand {{
@@ -244,22 +265,22 @@ def build_html(stories: list[dict], now: datetime) -> str:
   }}
 
   .y-badge {{
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     background: var(--red);
     color: var(--paper);
     font-weight: 900;
-    font-size: 22px;
-    line-height: 28px;
+    font-size: 24px;
+    line-height: 32px;
     text-align: center;
     border: 2px solid var(--ink);
   }}
 
   .masthead-title {{
     font-family: Georgia, "Times New Roman", "Liberation Serif", serif;
-    font-size: 27px;
+    font-size: 30px;
     font-weight: 900;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
     line-height: 1;
   }}
 
@@ -268,31 +289,30 @@ def build_html(stories: list[dict], now: datetime) -> str:
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 3px;
+    gap: 4px;
   }}
 
   .edition-pill {{
     background: var(--yellow);
     color: var(--ink);
-    border: 1.5px solid var(--ink);
-    font-size: 10px;
+    border: 2px solid var(--ink);
+    font-size: 12px;
     font-weight: 900;
-    letter-spacing: 0.9px;
-    padding: 1px 7px;
+    letter-spacing: 0.6px;
+    padding: 1px 8px;
   }}
 
   .date-line {{
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
+    font-size: 13px;
+    font-weight: 800;
   }}
 
   /* Lead Story (#1) */
   .lead {{
     border: 2px solid var(--ink);
-    border-left: 7px solid var(--red);
-    padding: 7px 11px;
-    margin-bottom: 8px;
+    border-left: 8px solid var(--red);
+    padding: 9px 13px;
+    margin-bottom: 10px;
     background: var(--paper);
   }}
 
@@ -300,55 +320,55 @@ def build_html(stories: list[dict], now: datetime) -> str:
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
   }}
 
   .lead-badges {{
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
   }}
 
   .lead-kicker {{
     background: var(--red);
     color: var(--paper);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 900;
-    letter-spacing: 0.8px;
-    padding: 1px 6px;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
   }}
 
   .pill {{
-    font-size: 10px;
-    font-weight: 800;
-    padding: 1px 6px;
+    font-size: 12px;
+    font-weight: 900;
+    padding: 2px 7px;
     color: var(--paper);
   }}
 
   .lead-stats {{
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 800;
     display: flex;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
   }}
 
   .lead-title {{
     font-family: Georgia, "Times New Roman", "Liberation Serif", serif;
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 900;
-    line-height: 1.18;
+    line-height: 1.2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }}
 
-  /* Two-Column Grid */
+  /* Two-Column Grid (3 + 3 large readable items) */
   .columns {{
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    gap: 16px;
     flex: 1;
     min-height: 0;
   }}
@@ -359,17 +379,17 @@ def build_html(stories: list[dict], now: datetime) -> str:
   }}
 
   .col-right {{
-    border-left: 1.5px solid var(--ink);
-    padding-left: 14px;
+    border-left: 2px solid var(--ink);
+    padding-left: 16px;
   }}
 
   .story {{
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 3px 0;
-    border-bottom: 1px solid var(--ink);
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1.5px solid var(--ink);
   }}
 
   .story:last-child {{
@@ -377,12 +397,12 @@ def build_html(stories: list[dict], now: datetime) -> str:
   }}
 
   .rank {{
-    width: 24px;
+    width: 30px;
     flex-shrink: 0;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: 16px;
+    font-size: 21px;
     font-weight: 900;
-    line-height: 1.1;
+    line-height: 1;
     color: var(--ink);
   }}
 
@@ -396,10 +416,10 @@ def build_html(stories: list[dict], now: datetime) -> str:
   }}
 
   .story-title {{
-    font-size: 13.5px;
+    font-size: 16.5px;
     font-weight: 800;
-    line-height: 1.22;
-    margin-bottom: 2px;
+    line-height: 1.24;
+    margin-bottom: 4px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -408,41 +428,40 @@ def build_html(stories: list[dict], now: datetime) -> str:
 
   .mini-tag {{
     display: inline-block;
-    font-size: 9.5px;
+    font-size: 11px;
     font-weight: 900;
-    padding: 0px 4px;
+    padding: 1px 5px;
     vertical-align: 1px;
     color: var(--paper);
   }}
 
   .tag-blue {{ background: var(--blue); }}
-  .tag-green {{ background: var(--green); }}
+  .tag-green {{ background: var(--green); color: var(--ink); }}
   .tag-red {{ background: var(--red); }}
 
   .story-meta {{
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 800;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }}
 
   .domain {{ color: var(--blue); }}
-  .pts {{ color: var(--green); font-weight: 800; }}
+  .pts {{ color: var(--red); font-weight: 900; }}
   .cmts {{ color: var(--ink); }}
   .age {{ color: var(--ink); }}
-  .dot {{ margin: 0 3px; }}
+  .dot {{ margin: 0 4px; }}
 
   /* Footer */
   .footer {{
     border-top: 2px solid var(--ink);
-    margin-top: 5px;
-    padding-top: 4px;
+    margin-top: 6px;
+    padding-top: 5px;
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
-    letter-spacing: 0.2px;
   }}
 
   .footer-accent {{
@@ -472,8 +491,8 @@ def build_html(stories: list[dict], now: datetime) -> str:
         <div class="lead-stats">
           <span class="domain">{html.escape(lead['domain'])}</span>
           <span class="pts">▲ {lead['points']} pts</span>
-          <span>{lead['comments']} comments</span>
-          <span>{relative_age(lead['created_at'], now_ts)} ago</span>
+          <span>{lead['comments']} cmts</span>
+          <span>{relative_age(lead['created_at'], now_ts)}</span>
         </div>
       </div>
       <h2 class="lead-title">{lead_title}</h2>
@@ -489,8 +508,8 @@ def build_html(stories: list[dict], now: datetime) -> str:
     </main>
 
     <footer class="footer">
-      <span><span class="footer-accent">■</span> reTerminal E1002 · Spectra 6 Front Page</span>
-      <span>Auto Refresh: 08:00 &amp; 20:00 CST · news.ycombinator.com</span>
+      <span><span class="footer-accent">■</span> reTerminal E1002 · Spectra 6 Crisp Mode</span>
+      <span>Auto Refresh: 08:00 &amp; 20:00 CST</span>
     </footer>
   </div>
 </body>
@@ -512,6 +531,68 @@ def find_chrome() -> str:
         if path and os.path.exists(path):
             return path
     raise RuntimeError("No Chrome/Chromium binary found. Set CHROME_BIN env var.")
+
+
+def snap_pixel_to_spectra6(r: int, g: int, b: int) -> tuple[int, int, int]:
+    """Map an antialiased RGB pixel cleanly to one of the 6 exact Spectra 6 colors."""
+    cmax = max(r, g, b)
+    cmin = min(r, g, b)
+    chroma = cmax - cmin
+
+    # Neutral grays (text & borders on white/black)
+    if chroma < 48:
+        lum = (r * 299 + g * 587 + b * 114) // 1000
+        return BLACK if lum < 175 else WHITE
+
+    # Colored pixels: check dominant channels cleanly without introducing stray hues
+    # Yellow: high R & G, lower B
+    if r >= 160 and g >= 160 and b <= 165:
+        return YELLOW
+    # Pure Blue (blue text on white or blue badge)
+    if b > r + 45 and b > g + 45:
+        # Light blue fringe from antialiasing against white -> keep crisp above threshold
+        return WHITE if (r > 180 and g > 180) else BLUE
+    # Pure Red (red text on white or red badge)
+    if r > g + 45 and r > b + 45:
+        return WHITE if (g > 180 and b > 180) else RED
+    # Pure Green
+    if g > r + 45 and g > b + 45:
+        return WHITE if (r > 180 and b > 180) else GREEN
+
+    # Fallback: nearest Euclidean distance among the 6 exact palette colors
+    best = WHITE
+    best_dist = 10**9
+    for pr, pg, pb in EXACT_PALETTE:
+        d = (r - pr) ** 2 + (g - pg) ** 2 + (b - pb) ** 2
+        if d < best_dist:
+            best_dist = d
+            best = (pr, pg, pb)
+    return best
+
+
+def quantize_to_spectra6(png_path: Path) -> None:
+    """Convert rendered PNG in-place to an exact 6-color non-interlaced RGB PNG."""
+    im = Image.open(png_path).convert("RGB")
+    if im.size != (800, 480):
+        im = im.resize((800, 480), Image.Resampling.NEAREST)
+
+    src = list(im.getdata())
+    # Cache pixel mappings for speed (typically only a few hundred unique RGBs)
+    cache: dict[tuple[int, int, int], tuple[int, int, int]] = {}
+    out: list[tuple[int, int, int]] = []
+    for px in src:
+        mapped = cache.get(px)
+        if mapped is None:
+            mapped = snap_pixel_to_spectra6(*px)
+            cache[px] = mapped
+        out.append(mapped)
+
+    assert set(cache.values()) <= EXACT_PALETTE, "Unexpected color outside Spectra 6 palette"
+
+    clean = Image.new("RGB", (800, 480))
+    clean.putdata(out)
+    # Non-interlaced 8-bit RGB PNG (matches check_processed_png fast path)
+    clean.save(png_path, format="PNG", optimize=True, interlace=0)
 
 
 def render_png(html_content: str, out_png: Path) -> None:
@@ -536,15 +617,17 @@ def render_png(html_content: str, out_png: Path) -> None:
         ]
         subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
+    quantize_to_spectra6(out_png)
+
 
 def main() -> None:
     now = datetime.now(CST)
-    stories = fetch_stories(limit=11)
+    stories = fetch_stories(limit=7)
     if len(stories) < 2:
         raise RuntimeError("Failed to fetch Hacker News stories.")
     page_html = build_html(stories, now)
     render_png(page_html, OUT_PNG)
-    print(f"Rendered {OUT_PNG} ({OUT_PNG.stat().st_size} bytes) with {len(stories)} stories.")
+    print(f"Rendered 1:1 Spectra 6 {OUT_PNG} ({OUT_PNG.stat().st_size} bytes) with {len(stories)} stories.")
 
 
 if __name__ == "__main__":
