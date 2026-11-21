@@ -335,13 +335,15 @@ function measureText(text, scale) {
 }
 
 /**
- * Stamp a crisp 1:1 Spectra 6 indoor sensor badge cleanly in the masthead center-right
- * (between title and edition pill, y=10..34, where all 3 modes have pure white space).
+ * Stamp a crisp 1:1 Spectra 6 indoor temperature & humidity badge cleanly in the
+ * masthead center-right (y=7..36, between title and edition pill).
+ * Battery is still recorded in KV and shown on the web dashboard, while the
+ * on-device low-battery indicator handles <10% alerts automatically.
  */
 function stampSensorBadge(rgb, width, height, reading) {
-  if (reading.temp === null && reading.hum === null && reading.bat === null) return;
+  if (reading.temp === null && reading.hum === null) return;
 
-  const scale = 2; // 10x14 crisp pixels per char
+  const scale = 3; // 15x21 crisp pixels per char
   const segments = [];
   if (reading.temp !== null) {
     segments.push({ text: `${reading.temp.toFixed(1)}°C`, col: COL_RED });
@@ -350,22 +352,17 @@ function stampSensorBadge(rgb, width, height, reading) {
     if (segments.length) segments.push({ text: " ", col: COL_BLACK });
     segments.push({ text: `${Math.round(reading.hum)}%`, col: COL_BLUE });
   }
-  if (reading.bat !== null) {
-    if (segments.length) segments.push({ text: " ", col: COL_BLACK });
-    const batCol = reading.bat <= 20 ? COL_RED : COL_GREEN;
-    segments.push({ text: `B${Math.round(reading.bat)}%`, col: batCol });
-  }
 
   const fullText = segments.map((s) => s.text).join("");
   const textW = measureText(fullText, scale);
   const padX = 8;
-  const padY = 5;
+  const padY = 4;
   const boxW = textW + padX * 2;
-  const boxH = 7 * scale + padY * 2; // 24px tall
+  const boxH = 7 * scale + padY * 2; // 29px tall
 
-  // Place cleanly in the header open space (y=9..33, right of title, left of edition pill)
-  const boxX = Math.max(290, 534 - boxW);
-  const boxY = 9;
+  // Place cleanly in header open space (y=7..36, right of title, left of edition pill)
+  const boxX = Math.max(280, 534 - boxW);
+  const boxY = 7;
 
   fillRect(rgb, width, height, boxX, boxY, boxW, boxH, COL_WHITE);
   drawRectBorder(rgb, width, height, boxX, boxY, boxW, boxH, 2, COL_BLACK);
@@ -545,7 +542,7 @@ export default {
       }
 
       const upstreamEtag = upstreamResp.headers.get("ETag") || "";
-      const sensorKey = `${reading.temp ?? ""}_${reading.hum ?? ""}_${reading.bat ?? ""}`;
+      const sensorKey = `v2-${reading.temp ?? ""}_${reading.hum ?? ""}`;
       const combinedEtag = `"${upstreamEtag.replace(/"/g, "")}-${sensorKey}"`;
 
       const ifNoneMatch = request.headers.get("If-None-Match");
