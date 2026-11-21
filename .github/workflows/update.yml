@@ -1,0 +1,38 @@
+name: Update E1002 News Board
+
+on:
+  schedule:
+    # 07:40 CST (23:40 UTC) & 19:40 CST (11:40 UTC)
+    - cron: "40 23 * * *"
+    - cron: "40 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate Hacker News 800x480 PNG
+        run: python3 scripts/generate_hn.py
+
+      - name: Commit updated image
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/hn.png docs/hn_render.html
+          if ! git diff --cached --quiet; then
+            git commit -m "Update Hacker News board ($(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M CST'))"
+            git push
+          else
+            echo "No changes to commit."
+          fi
