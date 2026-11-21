@@ -2,10 +2,24 @@ name: Update E1002 News Board
 
 on:
   schedule:
-    # 07:40 CST (23:40 UTC) & 19:40 CST (11:40 UTC)
+    # 07:40 CST (23:40 UTC) -> Morning US/CN Markets & News
     - cron: "40 23 * * *"
+    # 12:40 CST (04:40 UTC) -> Midday Markets & Hacker News
+    - cron: "40 4 * * *"
+    # 19:40 CST (11:40 UTC) -> Evening Daily Print Calendar & Close Ticker
     - cron: "40 11 * * *"
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "Board mode (auto / morning / midday / evening)"
+        required: false
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - morning
+          - midday
+          - evening
 
 permissions:
   contents: write
@@ -30,14 +44,16 @@ jobs:
       - name: Install Pillow
         run: pip install pillow
 
-      - name: Generate US/CN Tech & Markets 800x480 PNG
-        run: python3 scripts/generate_board.py
+      - name: Generate 800x480 Spectra 6 Board PNG
+        env:
+          BOARD_MODE: ${{ inputs.mode || 'auto' }}
+        run: python3 scripts/generate_board.py --mode "$BOARD_MODE"
 
       - name: Commit updated image
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/hn.png docs/hn_render.html
+          git add docs/hn.png docs/hn_render.html docs/morning.png docs/midday.png docs/evening.png
           if ! git diff --cached --quiet; then
             git commit -m "Update E1002 board ($(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M CST'))"
             git push

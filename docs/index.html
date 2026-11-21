@@ -1,39 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>E1002 News Board</title>
+  <title>E1002 全日智能看板预览</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #111;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+      background: #141414;
       color: #eee;
+      margin: 0;
+      padding: 28px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      gap: 16px;
+      gap: 28px;
     }
+    h1 { margin: 0; font-size: 20px; }
+    .card { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .label { font-size: 14px; color: #bbb; }
     img {
       width: 800px;
       max-width: 95vw;
       height: auto;
-      border: 8px solid #2a2a2a;
+      border: 8px solid #2b2b2b;
       border-radius: 6px;
       background: #fff;
     }
-    code {
-      background: #222;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
+    code { background: #262626; padding: 2px 6px; border-radius: 4px; color: #ffd54f; }
   </style>
 </head>
 <body>
-  <img src="./hn.png" alt="Hacker News Daily (800x480)" />
-  <div>Direct E1002 Image URL: <code>./hn.png</code></div>
+  <h1>reTerminal E1002 · 全日三档自动切换预览</h1>
+  <div class="card">
+    <div class="label">当前生效画面（设备拉取 <code>./hn.png</code>）</div>
+    <img src="./hn.png" alt="Active Board" />
+  </div>
+  <div class="card">
+    <div class="label">08:00 早报档（<code>./morning.png</code>）— 中美指数点数 + 板块盘后 + 双栏要闻</div>
+    <img src="./morning.png" alt="Morning Edition" />
+  </div>
+  <div class="card">
+    <div class="label">13:00 午报档（<code>./midday.png</code>）— 8格盘面 + Hacker News 午休精选</div>
+    <img src="./midday.png" alt="Midday Edition" />
+  </div>
+  <div class="card">
+    <div class="label">20:00 晚报档（<code>./evening.png</code>）— 单向历 + 每日包豪斯版画 + 收盘速览</div>
+    <img src="./evening.png" alt="Evening Edition" />
+  </div>
 </body>
 </html>
