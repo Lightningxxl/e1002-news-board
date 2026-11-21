@@ -17,6 +17,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install CJK fonts for crisp Chinese rendering
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -25,8 +30,8 @@ jobs:
       - name: Install Pillow
         run: pip install pillow
 
-      - name: Generate Hacker News 800x480 PNG
-        run: python3 scripts/generate_hn.py
+      - name: Generate US/CN Tech & Markets 800x480 PNG
+        run: python3 scripts/generate_board.py
 
       - name: Commit updated image
         run: |
@@ -34,7 +39,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/hn.png docs/hn_render.html
           if ! git diff --cached --quiet; then
-            git commit -m "Update Hacker News board ($(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M CST'))"
+            git commit -m "Update E1002 board ($(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M CST'))"
             git push
           else
             echo "No changes to commit."

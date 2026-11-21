@@ -1,6 +1,13 @@
-# E1002 News Board
+# E1002 News & Markets Board
 
-Automated `800×480` E Ink Spectra 6 newspaper image generator for **Seeed Studio reTerminal E1002** running [`aitjcize/esp32-photoframe`](https://github.com/aitjcize/esp32-photoframe).
+Automated `800×480` 1:1 pixel-exact **E Ink Spectra 6** daily newspaper generator for **Seeed Studio reTerminal E1002** running [`aitjcize/esp32-photoframe`](https://github.com/aitjcize/esp32-photoframe).
+
+## Coverage
+
+- **US Markets (Intraday + Pre/After-Hours)**: S&P 500 (`SPY`), Nasdaq 100 (`QQQ`), Semiconductors (`SOXX`), Consumer Discretionary (`XLY`)
+- **CN Markets (Intraday + After-Hours/Level)**: CSI 300 (`沪深300`), China Tech (`KWEB` with AH), A-Share Semiconductors (`512480`), A-Share Consumer (`159928`)
+- **US Tech & Finance News**: Hacker News + CNBC Tech/Finance
+- **CN Finance & Tech News**: WallstreetCN (华尔街见闻)
 
 ## Live Image URL
 
@@ -8,16 +15,8 @@ Automated `800×480` E Ink Spectra 6 newspaper image generator for **Seeed Studi
 https://lightningxxl.github.io/e1002-news-board/hn.png
 ```
 
-## Recommended Device Settings (`esp32-photoframe`)
-
-- **Rotation Mode**: `URL`
-- **Image URL**: `https://lightningxxl.github.io/e1002-news-board/hn.png`
-- **Timezone**: `CST-8` (`Asia/Shanghai`)
-- **Cron Schedule**: `0 8 *` and `0 20 *` (08:00 and 20:00 CST daily)
-- **Deep Sleep**: Enabled
-
 ## Local Run
 
 ```bash
-python3 scripts/generate_hn.py
+python3 scripts/generate_board.py
 ```
