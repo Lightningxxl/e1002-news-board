@@ -1,3 +1,12 @@
 name = "e1002-board"
 main = "src/index.js"
 compatibility_date = "2026-01-01"
+workers_dev = false
+
+routes = [
+  { pattern = "e1002.claworld.love", custom_domain = true }
+]
+
+[[kv_namespaces]]
+binding = "SENSORS_KV"
+id = "dc03d507a78b44dea45003a7127c3dba"
