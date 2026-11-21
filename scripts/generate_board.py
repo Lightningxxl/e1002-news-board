@@ -681,7 +681,7 @@ def build_midday_html(
     <header class="masthead">
       <div class="brand">
         <span class="badge badge-blue">午报</span>
-        <span class="title">午间盘面 × HACKER NEWS</span>
+        <span class="title">午间盘面 × HN</span>
       </div>
       <div class="meta-right">
         <span class="edition-pill">13:00 MIDDAY</span>
@@ -888,7 +888,7 @@ def build_evening_html(
     <header class="masthead">
       <div class="brand">
         <span class="badge">晚间画报</span>
-        <span class="title">DAILY PRINT · NO.{day_of_year:03d}</span>
+        <span class="title">DAILY PRINT</span>
       </div>
       <div class="meta-right">
         <span class="edition-pill">20:00 EVENING</span>
