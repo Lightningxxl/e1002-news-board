@@ -471,6 +471,37 @@ function renderDashboardHtml(latest, history) {
 }
 
 export default {
+  async scheduled(event, env, ctx) {
+    if (!env.GH_DISPATCH_TOKEN) {
+      console.error("GH_DISPATCH_TOKEN secret is not configured");
+      return;
+    }
+    const modeByCron = {
+      "45 23 * * *": "morning",
+      "45 4 * * *": "midday",
+      "45 11 * * *": "evening",
+    };
+    const mode = modeByCron[event.cron] || "auto";
+    const resp = await fetch(
+      "https://api.github.com/repos/Lightningxxl/e1002-news-board/actions/workflows/update.yml/dispatches",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.GH_DISPATCH_TOKEN}`,
+          Accept: "application/vnd.github+json",
+          "User-Agent": "e1002-board-worker/1.0",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ref: "main", inputs: { mode } }),
+      }
+    );
+    if (!resp.ok) {
+      console.error("GitHub workflow dispatch failed:", resp.status, await resp.text());
+    } else {
+      console.log(`Dispatched update.yml (mode=${mode}) for cron "${event.cron}"`);
+    }
+  },
+
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 

@@ -1,13 +1,7 @@
 name: Update E1002 News Board
 
 on:
-  schedule:
-    # 07:40 CST (23:40 UTC) -> Morning US/CN Markets & News
-    - cron: "40 23 * * *"
-    # 12:40 CST (04:40 UTC) -> Midday Markets & Hacker News
-    - cron: "40 4 * * *"
-    # 19:40 CST (11:40 UTC) -> Evening Daily Print Calendar & Close Ticker
-    - cron: "40 11 * * *"
+  # Triggered on exact schedule (07:45 / 12:45 / 19:45 CST) by Cloudflare Worker Cron
   workflow_dispatch:
     inputs:
       mode:

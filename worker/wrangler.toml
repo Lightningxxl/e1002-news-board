@@ -7,6 +7,10 @@ routes = [
   { pattern = "e1002.zy-sj.com", custom_domain = true }
 ]
 
+[triggers]
+# 07:45 CST (23:45 UTC), 12:45 CST (04:45 UTC), 19:45 CST (11:45 UTC)
+crons = ["45 23 * * *", "45 4 * * *", "45 11 * * *"]
+
 [[kv_namespaces]]
 binding = "SENSORS_KV"
 id = "dc03d507a78b44dea45003a7127c3dba"
