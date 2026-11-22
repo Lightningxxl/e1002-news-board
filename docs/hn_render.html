@@ -52,223 +52,118 @@
     font-size: 11.5px; font-weight: 800;
   }
 
-  .tiles {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
-    margin-bottom: 8px;
+  .ev-body {
+    display: grid; grid-template-columns: 370px 390px; gap: 14px;
+    flex: 1; min-height: 0; align-items: stretch;
   }
-  .tile {
-    border: 2px solid var(--ink); padding: 4px 6px;
-    display: flex; flex-direction: column; gap: 1px;
+  .cal-panel {
+    display: flex; flex-direction: column; justify-content: space-between;
+    border: 2px solid var(--ink); padding: 12px 14px;
   }
-  .t-top { display: flex; justify-content: space-between; align-items: baseline; }
-  .t-name { font-size: 12px; font-weight: 900; }
-  .t-px { font-size: 12px; font-weight: 900; color: var(--blue); font-variant-numeric: tabular-nums; }
-  .t-mid { font-size: 14px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.15; }
-  .t-ext { font-size: 10.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
-
-  .hn-sec-head {
+  .cal-top {
     display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 2px solid var(--ink); padding-bottom: 3px; margin-bottom: 4px;
+    border-bottom: 2px solid var(--ink); padding-bottom: 6px;
   }
-  .hn-sec-title { font-size: 14px; font-weight: 900; }
-  .hn-badge { background: var(--red); color: var(--paper); padding: 0 5px; margin-right: 6px; }
-  .hn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1; min-height: 0; }
-  .hn-col { display: flex; flex-direction: column; }
-  .hn-col-right { border-left: 2px solid var(--ink); padding-left: 14px; }
-  .hn-card {
-    flex: 1; display: flex; align-items: center; gap: 9px;
-    padding: 4px 0; border-bottom: 1px solid var(--ink);
+  .cal-month { font-size: 16px; font-weight: 900; letter-spacing: 1px; }
+  .cal-wk-tag {
+    background: var(--yellow); border: 2px solid var(--ink);
+    font-size: 12px; font-weight: 900; padding: 1px 7px;
   }
-  .hn-card:last-child { border-bottom: none; }
-  .hn-rank { font-family: Georgia, serif; font-size: 20px; font-weight: 900; width: 26px; flex-shrink: 0; }
-  .hn-hot { color: var(--red); }
-  .hn-body { flex: 1; min-width: 0; }
-  .hn-title {
-    font-size: 15px; font-weight: 800; line-height: 1.24; margin-bottom: 2px;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  .cal-day-wrap {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 4px 0;
   }
-  .hn-meta { font-size: 12px; font-weight: 800; display: flex; gap: 5px; white-space: nowrap; overflow: hidden; }
-  .hn-dom { color: var(--blue); }
-  .hn-pts { color: var(--red); font-weight: 900; }
+  .cal-day-num {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 92px; font-weight: 900; line-height: 0.95; color: var(--ink);
+  }
+  .cal-day-side { text-align: right; }
+  .cal-wk-cn { font-size: 24px; font-weight: 900; color: var(--red); }
+  .cal-wk-en { font-size: 13px; font-weight: 900; letter-spacing: 0.8px; color: var(--blue); }
+
+  .prog-box {
+    border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink);
+    padding: 8px 0;
+  }
+  .prog-head {
+    display: flex; justify-content: space-between;
+    font-size: 12.5px; font-weight: 900; margin-bottom: 5px;
+  }
+  .prog-bar {
+    width: 100%; height: 14px; border: 2px solid var(--ink); background: var(--paper);
+  }
+  .prog-fill {
+    height: 100%; width: 89%; background: var(--blue);
+  }
+
+  .quote-box { padding-top: 6px; }
+  .quote-txt {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 15px; font-weight: 900; line-height: 1.3; margin-bottom: 4px;
+  }
+  .quote-auth { font-size: 12px; font-weight: 900; color: var(--red); text-align: right; }
+
+  .art-panel {
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .ticker-bar {
+    border: 2px solid var(--ink); background: var(--paper);
+    margin-top: 8px; padding: 4px 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11.5px; font-weight: 800; white-space: nowrap; overflow: hidden;
+  }
+  .e-px { color: var(--blue); font-weight: 900; }
+  .e-ext { color: var(--ink); font-size: 10.5px; }
 </style>
 </head>
 <body>
   <div class="page">
     <header class="masthead">
       <div class="brand">
-        <span class="badge badge-blue">午报</span>
-        <span class="title">午间盘面 × HN</span>
+        <span class="badge">晚间画报</span>
+        <span class="title">DAILY PRINT</span>
       </div>
       <div class="meta-right">
-        <span class="edition-pill">13:00 MIDDAY</span>
-        <span class="date-str">11/22 周日 14:57 CST</span>
+        <span class="edition-pill">20:00 EVENING</span>
+        <span class="date-str">2026.11.22</span>
       </div>
     </header>
 
-    <section class="tiles">
-      
-            <div class="tile">
-              <div class="t-top">
-                <span class="t-name">标普500</span>
-                <span class="t-px">6,910</span>
-              </div>
-              <div class="t-mid"><span class="down">-3.70%</span></div>
-              <div class="t-ext"><span class="up"><span class="ext-pfx">AH </span>+1.11%</span></div>
-            </div>
-            <div class="tile">
-              <div class="t-top">
-                <span class="t-name">纳斯达克</span>
-                <span class="t-px">22,618</span>
-              </div>
-              <div class="t-mid"><span class="down">-5.28%</span></div>
-              <div class="t-ext"><span class="up"><span class="ext-pfx">AH </span>+1.53%</span></div>
-            </div>
-            <div class="tile">
-              <div class="t-top">
-                <span class="t-name">费城半导</span>
-                <span class="t-px">8,409</span>
-              </div>
-              <div class="t-mid"><span class="down">-10.73%</span></div>
-              <div class="t-ext"><span class="up"><span class="ext-pfx">AH </span>+2.51%</span></div>
-            </div>
-            <div class="tile">
-              <div class="t-top">
-                <span class="t-name">美消费XLY</span>
-                <span class="t-px">112.46</span>
-              </div>
-              <div class="t-mid"><span class="down">-2.95%</span></div>
-              <div class="t-ext"><span class="up"><span class="ext-pfx">AH </span>+1.37%</span></div>
-            </div>
-            <div class="tile">
-              <div class="t-top">
-                <span class="t-name">沪深300</span>
-                <span class="t-px">3,955</span>
-              </div>
-              <div class="t-mid"><span class="down">-0.76%</span></div>
-              <div class="t-ext"><span class="flat">日内收盘/午盘</span></div>
-            </div>
-            <div class="tile">
-              <div class="t-top">
-                <span class="t-name">中概KWEB</span>
-                <span class="t-px">20.72</span>
-              </div>
-              <div class="t-mid"><span class="down">-2.77%</span></div>
-              <div class="t-ext"><span class="up"><span class="ext-pfx">AH </span>+0.77%</span></div>
-            </div>
-            <div class="tile">
-              <div class="t-top">
-                <span class="t-name">A半导体</span>
-                <span class="t-px">0.745</span>
-              </div>
-              <div class="t-mid"><span class="down">-4.36%</span></div>
-              <div class="t-ext"><span class="flat">日内收盘/午盘</span></div>
-            </div>
-            <div class="tile">
-              <div class="t-top">
-                <span class="t-name">A股消费</span>
-                <span class="t-px">0.704</span>
-              </div>
-              <div class="t-mid"><span class="down">-0.71%</span></div>
-              <div class="t-ext"><span class="flat">日内收盘/午盘</span></div>
-            </div>
-    </section>
-
-    <div class="hn-sec-head">
-      <span class="hn-sec-title"><span class="hn-badge">Y</span>Hacker News 午休深度精选</span>
-      <span class="t-px">news.ycombinator.com</span>
-    </div>
-
-    <main class="hn-grid">
-      <div class="hn-col">
-        <article class="hn-card">
-          <div class="hn-rank hn-hot">01</div>
-          <div class="hn-body">
-            <div class="hn-title">Lean verification of the Riemann Hypothesis</div>
-            <div class="hn-meta">
-              <span class="hn-dom">leanprover-community.github.io</span>
-              <span>·</span>
-              <span class="hn-pts">▲945</span>
-              <span>·</span>
-              <span>809 cmts</span>
-            </div>
+    <main class="ev-body">
+      <section class="cal-panel">
+        <div class="cal-top">
+          <span class="cal-month">NOV 2026</span>
+          <span class="cal-wk-tag">DAY 326 / 365</span>
+        </div>
+        <div class="cal-day-wrap">
+          <div class="cal-day-num">22</div>
+          <div class="cal-day-side">
+            <div class="cal-wk-cn">星期日</div>
+            <div class="cal-wk-en">SUNDAY</div>
           </div>
-        </article>
+        </div>
+        <div class="prog-box">
+          <div class="prog-head">
+            <span>2026 YEAR PROGRESS</span>
+            <span>89% · 余 39 天</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill"></div></div>
+        </div>
+        <div class="quote-box">
+          <div class="quote-txt">“In the short run, the market is a voting machine; in the long run, a weighing machine.”</div>
+          <div class="quote-auth">— Benjamin Graham</div>
+        </div>
+      </section>
 
-        <article class="hn-card">
-          <div class="hn-rank hn-hot">02</div>
-          <div class="hn-body">
-            <div class="hn-title">Pill to treat pancreatic cancer hailed as &#x27;biggest breakthrough in decades&#x27;</div>
-            <div class="hn-meta">
-              <span class="hn-dom">theguardian.com</span>
-              <span>·</span>
-              <span class="hn-pts">▲871</span>
-              <span>·</span>
-              <span>202 cmts</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="hn-card">
-          <div class="hn-rank">03</div>
-          <div class="hn-body">
-            <div class="hn-title">Ask HN: I have been unemployed for 2y. 15 years of experience, US. What to do?</div>
-            <div class="hn-meta">
-              <span class="hn-dom">ycombinator.com</span>
-              <span>·</span>
-              <span class="hn-pts">▲671</span>
-              <span>·</span>
-              <span>765 cmts</span>
-            </div>
-          </div>
-        </article></div>
-      <div class="hn-col hn-col-right">
-        <article class="hn-card">
-          <div class="hn-rank">04</div>
-          <div class="hn-body">
-            <div class="hn-title">Detonating a pile of lead azide</div>
-            <div class="hn-meta">
-              <span class="hn-dom">science.org</span>
-              <span>·</span>
-              <span class="hn-pts">▲585</span>
-              <span>·</span>
-              <span>377 cmts</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="hn-card">
-          <div class="hn-rank">05</div>
-          <div class="hn-body">
-            <div class="hn-title">My monitor was cutting my download speed by 75%</div>
-            <div class="hn-meta">
-              <span class="hn-dom">blog.tymscar.com</span>
-              <span>·</span>
-              <span class="hn-pts">▲551</span>
-              <span>·</span>
-              <span>265 cmts</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="hn-card">
-          <div class="hn-rank">06</div>
-          <div class="hn-body">
-            <div class="hn-title">Why there are still no non-WebKit browsers on iOS</div>
-            <div class="hn-meta">
-              <span class="hn-dom">blog.mozilla.org</span>
-              <span>·</span>
-              <span class="hn-pts">▲544</span>
-              <span>·</span>
-              <span>289 cmts</span>
-            </div>
-          </div>
-        </article></div>
+      <section class="art-panel">
+        <svg xmlns="http://www.w3.org/2000/svg" width="390" height="354" viewBox="0 0 390 354"><rect x="0" y="0" width="130" height="118" fill="#000000" stroke="#000000" stroke-width="3"/><path d="M 14 59 A 51 51 0 0 1 116 59 Z" fill="#FFFFFF" stroke="#000000" stroke-width="3"/><circle cx="65" cy="87" r="14" fill="#FFFF00" stroke="#000000" stroke-width="3"/><rect x="130" y="0" width="130" height="118" fill="#FFFF00" stroke="#000000" stroke-width="3"/><path d="M 144 59 A 51 51 0 0 1 246 59 Z" fill="#000000" stroke="#000000" stroke-width="3"/><circle cx="195" cy="87" r="14" fill="#FF0000" stroke="#000000" stroke-width="3"/><rect x="260" y="0" width="130" height="118" fill="#FFFFFF" stroke="#000000" stroke-width="3"/><circle cx="325" cy="59" r="47" fill="#0000FF" stroke="#000000" stroke-width="3"/><rect x="0" y="118" width="130" height="118" fill="#FFFF00" stroke="#000000" stroke-width="3"/><polygon points="0,118 130,118 0,236" fill="#FFFFFF" stroke="#000000" stroke-width="3"/><rect x="130" y="118" width="130" height="118" fill="#FFFF00" stroke="#000000" stroke-width="3"/><circle cx="195" cy="177" r="47" fill="#000000" stroke="#000000" stroke-width="3"/><rect x="260" y="118" width="130" height="118" fill="#FFFF00" stroke="#000000" stroke-width="3"/><polygon points="260,118 390,236 260,236" fill="#00FF00" stroke="#000000" stroke-width="3"/><rect x="0" y="236" width="130" height="118" fill="#FFFFFF" stroke="#000000" stroke-width="3"/><path d="M 14 295 A 51 51 0 0 1 116 295 Z" fill="#FF0000" stroke="#000000" stroke-width="3"/><circle cx="65" cy="323" r="14" fill="#FFFF00" stroke="#000000" stroke-width="3"/><rect x="130" y="236" width="130" height="118" fill="#FFFFFF" stroke="#000000" stroke-width="3"/><circle cx="195" cy="295" r="47" fill="#FFFFFF" stroke="#000000" stroke-width="3"/><rect x="260" y="236" width="130" height="118" fill="#FF0000" stroke="#000000" stroke-width="3"/><rect x="274" y="252" width="102" height="16" fill="#00FF00" stroke="#000000" stroke-width="2"/><rect x="274" y="282" width="102" height="16" fill="#0000FF" stroke="#000000" stroke-width="2"/><rect x="274" y="312" width="102" height="16" fill="#00FF00" stroke="#000000" stroke-width="2"/><rect x="1.5" y="1.5" width="387" height="351" fill="none" stroke="#000000" stroke-width="3"/></svg>
+      </section>
     </main>
 
-    <footer class="footer">
-      <span><span class="up">▲绿涨</span> <span class="down">▼红跌</span> · 午间档 13:00 · 晚 20:00 切换艺术画报</span>
-      <span>reTerminal E1002 · Spectra 6 Crisp</span>
-    </footer>
+    <div class="ticker-bar">
+      <span class="e-tick"><b>标普500</b> <span class="e-px">6,910</span> <span class="down">-3.70%</span> <span class="e-ext">AH+1.1%</span></span><span class="e-tick"><b>纳斯达克</b> <span class="e-px">22,618</span> <span class="down">-5.28%</span> <span class="e-ext">AH+1.5%</span></span><span class="e-tick"><b>费城半导</b> <span class="e-px">8,409</span> <span class="down">-10.73%</span> <span class="e-ext">AH+2.5%</span></span><span class="e-tick"><b>沪深300</b> <span class="e-px">3,955</span> <span class="down">-0.76%</span></span>
+    </div>
   </div>
 </body>
 </html>
