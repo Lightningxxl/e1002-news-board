@@ -52,118 +52,206 @@
     font-size: 11.5px; font-weight: 800;
   }
 
-  .ev-body {
-    display: grid; grid-template-columns: 370px 390px; gap: 14px;
-    flex: 1; min-height: 0; align-items: stretch;
+  .markets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+  .m-box { border: 2px solid var(--ink); }
+  .m-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .m-table thead th {
+    background: var(--ink); color: var(--paper);
+    font-size: 11.5px; font-weight: 900; padding: 3px 5px; text-align: left;
   }
-  .cal-panel {
-    display: flex; flex-direction: column; justify-content: space-between;
-    border: 2px solid var(--ink); padding: 12px 14px;
+  .m-table thead th.th-num { text-align: right; }
+  .m-table tbody td {
+    padding: 3.5px 5px; font-size: 13px; font-weight: 700;
+    border-top: 1px solid var(--ink); white-space: nowrap;
   }
-  .cal-top {
-    display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 2px solid var(--ink); padding-bottom: 6px;
-  }
-  .cal-month { font-size: 16px; font-weight: 900; letter-spacing: 1px; }
-  .cal-wk-tag {
-    background: var(--yellow); border: 2px solid var(--ink);
-    font-size: 12px; font-weight: 900; padding: 1px 7px;
-  }
-  .cal-day-wrap {
-    display: flex; align-items: baseline; justify-content: space-between;
-    padding: 4px 0;
-  }
-  .cal-day-num {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 92px; font-weight: 900; line-height: 0.95; color: var(--ink);
-  }
-  .cal-day-side { text-align: right; }
-  .cal-wk-cn { font-size: 24px; font-weight: 900; color: var(--red); }
-  .cal-wk-en { font-size: 13px; font-weight: 900; letter-spacing: 0.8px; color: var(--blue); }
+  .m-name { width: 28%; }
+  .m-px { width: 22%; text-align: right; color: var(--blue); font-weight: 800; font-variant-numeric: tabular-nums; }
+  .m-day { width: 23%; text-align: right; font-variant-numeric: tabular-nums; }
+  .m-ext { width: 27%; text-align: right; font-variant-numeric: tabular-nums; }
+  .m-sym { font-size: 11px; font-weight: 900; color: var(--blue); }
 
-  .prog-box {
-    border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink);
-    padding: 8px 0;
+  .news-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1; min-height: 0; }
+  .news-col { display: flex; flex-direction: column; min-height: 0; }
+  .news-col-right { border-left: 2px solid var(--ink); padding-left: 14px; }
+  .sec-head {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 2px solid var(--ink); padding-bottom: 3px; margin-bottom: 4px;
   }
-  .prog-head {
-    display: flex; justify-content: space-between;
-    font-size: 12.5px; font-weight: 900; margin-bottom: 5px;
+  .sec-title { font-size: 13.5px; font-weight: 900; }
+  .sec-dot-red { color: var(--red); }
+  .sec-dot-blue { color: var(--blue); }
+  .news-list { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  .news-item {
+    flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; padding: 5px 0; border-bottom: 1px solid var(--ink);
+    font-size: 14.5px; font-weight: 700; line-height: 1.32;
   }
-  .prog-bar {
-    width: 100%; height: 14px; border: 2px solid var(--ink); background: var(--paper);
+  .news-item:last-child { border-bottom: none; }
+  .n-tag {
+    display: inline-block; font-size: 11px; font-weight: 900;
+    padding: 1px 5px; margin-right: 4px; vertical-align: 1px; color: var(--paper); line-height: 1.15;
   }
-  .prog-fill {
-    height: 100%; width: 90%; background: var(--blue);
-  }
-
-  .quote-box { padding-top: 6px; }
-  .quote-txt {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 15px; font-weight: 900; line-height: 1.3; margin-bottom: 4px;
-  }
-  .quote-auth { font-size: 12px; font-weight: 900; color: var(--red); text-align: right; }
-
-  .art-panel {
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  .ticker-bar {
-    border: 2px solid var(--ink); background: var(--paper);
-    margin-top: 8px; padding: 4px 8px;
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 11.5px; font-weight: 800; white-space: nowrap; overflow: hidden;
-  }
-  .e-px { color: var(--blue); font-weight: 900; }
-  .e-ext { color: var(--ink); font-size: 10.5px; }
+  .tag-red { background: var(--red); }
+  .tag-blue { background: var(--blue); }
+  .tag-black { background: var(--ink); }
+  .n-meta { font-size: 11.5px; font-weight: 900; color: var(--red); margin-right: 4px; }
 </style>
 </head>
 <body>
   <div class="page">
     <header class="masthead">
       <div class="brand">
-        <span class="badge">晚间画报</span>
-        <span class="title">DAILY PRINT</span>
+        <span class="badge">早报</span>
+        <span class="title">中美科技金融日报</span>
       </div>
       <div class="meta-right">
-        <span class="edition-pill">20:00 EVENING</span>
-        <span class="date-str">2026.11.24</span>
+        <span class="edition-pill">08:00 MORNING</span>
+        <span class="date-str">11/25 周三 07:45 CST</span>
       </div>
     </header>
 
-    <main class="ev-body">
-      <section class="cal-panel">
-        <div class="cal-top">
-          <span class="cal-month">NOV 2026</span>
-          <span class="cal-wk-tag">DAY 328 / 365</span>
-        </div>
-        <div class="cal-day-wrap">
-          <div class="cal-day-num">24</div>
-          <div class="cal-day-side">
-            <div class="cal-wk-cn">星期二</div>
-            <div class="cal-wk-en">TUESDAY</div>
-          </div>
-        </div>
-        <div class="prog-box">
-          <div class="prog-head">
-            <span>2026 YEAR PROGRESS</span>
-            <span>90% · 余 37 天</span>
-          </div>
-          <div class="prog-bar"><div class="prog-fill"></div></div>
-        </div>
-        <div class="quote-box">
-          <div class="quote-txt">“Make things as simple as possible, but not simpler.”</div>
-          <div class="quote-auth">— Albert Einstein</div>
-        </div>
-      </section>
+    <section class="markets">
+      <div class="m-box">
+        <table class="m-table">
+          <thead>
+            <tr>
+              <th style="width:28%">US 美股</th>
+              <th class="th-num" style="width:22%">点数</th>
+              <th class="th-num" style="width:23%">日内</th>
+              <th class="th-num" style="width:27%">盘后/前</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="m-name">标普500</td>
+              <td class="m-px">7,201</td>
+              <td class="m-day"><span class="down">-0.50%</span></td>
+              <td class="m-ext"><span class="down"><span class="ext-pfx">AH </span>-0.27%</span></td>
+            </tr>
 
-      <section class="art-panel">
-        <svg xmlns="http://www.w3.org/2000/svg" width="390" height="354" viewBox="0 0 390 354"><rect x="0" y="0" width="130" height="118" fill="#000000" stroke="#000000" stroke-width="3"/><circle cx="65" cy="59" r="42" fill="#FFFF00" stroke="#000000" stroke-width="3"/><circle cx="65" cy="59" r="20" fill="#0000FF" stroke="#000000" stroke-width="3"/><rect x="130" y="0" width="130" height="118" fill="#000000" stroke="#000000" stroke-width="3"/><circle cx="195" cy="59" r="42" fill="#0000FF" stroke="#000000" stroke-width="3"/><circle cx="195" cy="59" r="20" fill="#00FF00" stroke="#000000" stroke-width="3"/><rect x="260" y="0" width="130" height="118" fill="#000000" stroke="#000000" stroke-width="3"/><rect x="274" y="16" width="102" height="16" fill="#FFFF00" stroke="#000000" stroke-width="2"/><rect x="274" y="46" width="102" height="16" fill="#FF0000" stroke="#000000" stroke-width="2"/><rect x="274" y="76" width="102" height="16" fill="#FFFF00" stroke="#000000" stroke-width="2"/><rect x="0" y="118" width="130" height="118" fill="#FFFFFF" stroke="#000000" stroke-width="3"/><path d="M 14 177 A 51 51 0 0 1 116 177 Z" fill="#FF0000" stroke="#000000" stroke-width="3"/><circle cx="65" cy="205" r="14" fill="#00FF00" stroke="#000000" stroke-width="3"/><rect x="130" y="118" width="130" height="118" fill="#FFFF00" stroke="#000000" stroke-width="3"/><polygon points="130,118 260,236 130,236" fill="#0000FF" stroke="#000000" stroke-width="3"/><rect x="260" y="118" width="130" height="118" fill="#FF0000" stroke="#000000" stroke-width="3"/><circle cx="325" cy="177" r="42" fill="#000000" stroke="#000000" stroke-width="3"/><circle cx="325" cy="177" r="20" fill="#00FF00" stroke="#000000" stroke-width="3"/><rect x="0" y="236" width="130" height="118" fill="#FFFFFF" stroke="#000000" stroke-width="3"/><polygon points="0,236 130,354 0,354" fill="#FF0000" stroke="#000000" stroke-width="3"/><rect x="130" y="236" width="130" height="118" fill="#FFFFFF" stroke="#000000" stroke-width="3"/><polygon points="260,236 260,354 130,354" fill="#FFFF00" stroke="#000000" stroke-width="3"/><rect x="260" y="236" width="130" height="118" fill="#0000FF" stroke="#000000" stroke-width="3"/><rect x="274" y="252" width="102" height="16" fill="#00FF00" stroke="#000000" stroke-width="2"/><rect x="274" y="282" width="102" height="16" fill="#000000" stroke="#000000" stroke-width="2"/><rect x="274" y="312" width="102" height="16" fill="#00FF00" stroke="#000000" stroke-width="2"/><rect x="1.5" y="1.5" width="387" height="351" fill="none" stroke="#000000" stroke-width="3"/></svg>
+            <tr>
+              <td class="m-name">纳斯达克</td>
+              <td class="m-px">23,734</td>
+              <td class="m-day"><span class="down">-1.48%</span></td>
+              <td class="m-ext"><span class="down"><span class="ext-pfx">AH </span>-0.36%</span></td>
+            </tr>
+
+            <tr>
+              <td class="m-name">费城半导</td>
+              <td class="m-px">8,833</td>
+              <td class="m-day"><span class="down">-7.88%</span></td>
+              <td class="m-ext"><span class="down"><span class="ext-pfx">AH </span>-0.30%</span></td>
+            </tr>
+
+            <tr>
+              <td class="m-name">美消费XLY</td>
+              <td class="m-px">117.72</td>
+              <td class="m-day"><span class="up">+0.68%</span></td>
+              <td class="m-ext"><span class="down"><span class="ext-pfx">AH </span>-0.19%</span></td>
+            </tr></tbody>
+        </table>
+      </div>
+      <div class="m-box">
+        <table class="m-table">
+          <thead>
+            <tr>
+              <th style="width:28%">CN 中国</th>
+              <th class="th-num" style="width:22%">点数</th>
+              <th class="th-num" style="width:23%">日内</th>
+              <th class="th-num" style="width:27%">盘后/前</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="m-name">沪深300</td>
+              <td class="m-px">3,964</td>
+              <td class="m-day"><span class="up">+0.14%</span></td>
+              <td class="m-ext"><span class="flat">--</span></td>
+            </tr>
+
+            <tr>
+              <td class="m-name">中概KWEB</td>
+              <td class="m-px">21.15</td>
+              <td class="m-day"><span class="down">-1.21%</span></td>
+              <td class="m-ext"><span class="down"><span class="ext-pfx">AH </span>-0.24%</span></td>
+            </tr>
+
+            <tr>
+              <td class="m-name">A半导体</td>
+              <td class="m-px">0.759</td>
+              <td class="m-day"><span class="up">+1.47%</span></td>
+              <td class="m-ext"><span class="flat">--</span></td>
+            </tr>
+
+            <tr>
+              <td class="m-name">A股消费</td>
+              <td class="m-px">0.703</td>
+              <td class="m-day"><span class="up">+0.14%</span></td>
+              <td class="m-ext"><span class="flat">--</span></td>
+            </tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <main class="news-grid">
+      <section class="news-col">
+        <div class="sec-head">
+          <span class="sec-title"><span class="sec-dot-red">■</span> US 科技 &amp; 金融要闻</span>
+          <span class="m-sym">HN · CNBC</span>
+        </div>
+        <div class="news-list">
+            <article class="news-item">
+              <span class="n-tag tag-red">HN</span> <span class="n-meta">▲869</span>
+              <span class="n-title">LLM agents work for their parent companies, not for you</span>
+            </article>
+
+            <article class="news-item">
+              <span class="n-tag tag-red">HN</span> <span class="n-meta">▲331</span>
+              <span class="n-title">Quad9 pulled their DNS service from France</span>
+            </article>
+
+            <article class="news-item">
+              <span class="n-tag tag-blue">TECH</span>
+              <span class="n-title">Saudi national charged in OpenAI bugging to be released on $1 million bond</span>
+            </article>
+
+            <article class="news-item">
+              <span class="n-tag tag-black">FIN</span>
+              <span class="n-title">Kalshi daily volume of ‘perps’ trading begins to top its prediction markets</span>
+            </article></div>
+      </section>
+      <section class="news-col news-col-right">
+        <div class="sec-head">
+          <span class="sec-title"><span class="sec-dot-blue">■</span> CN 财经 &amp; 科技要闻</span>
+          <span class="m-sym">华尔街见闻</span>
+        </div>
+        <div class="news-list">
+            <article class="news-item">
+              <span class="n-tag tag-blue">华尔街</span>
+              <span class="n-title">&quot;IPO认购火爆&quot;或许并不是好事?</span>
+            </article>
+
+            <article class="news-item">
+              <span class="n-tag tag-red">科技</span>
+              <span class="n-title">戴尔电话会：AI服务器积压订单突破1320亿美元</span>
+            </article>
+
+            <article class="news-item">
+              <span class="n-tag tag-blue">华尔街</span>
+              <span class="n-title">华尔街见闻早餐FM-Radio | 2026年11月25日</span>
+            </article>
+
+            <article class="news-item">
+              <span class="n-tag tag-blue">金融</span>
+              <span class="n-title">债务压顶，“华尔街狼王”Icahn身家从261亿美元跌至13亿美元</span>
+            </article></div>
       </section>
     </main>
 
-    <div class="ticker-bar">
-      <span class="e-tick"><b>标普500</b> <span class="e-px">7,237</span> <span class="up">+4.73%</span> <span class="e-ext">PRE-0.7%</span></span><span class="e-tick"><b>纳斯达克</b> <span class="e-px">24,090</span> <span class="up">+6.51%</span> <span class="e-ext">PRE-1.4%</span></span><span class="e-tick"><b>费城半导</b> <span class="e-px">9,588</span> <span class="up">+14.03%</span> <span class="e-ext">PRE-3.6%</span></span><span class="e-tick"><b>沪深300</b> <span class="e-px">3,964</span> <span class="up">+0.14%</span></span>
-    </div>
+    <footer class="footer">
+      <span><span class="up">▲绿涨</span> <span class="down">▼红跌</span> · 08:00 早报 / 13:00 午报 / 20:00 画报</span>
+      <span>CNBC · 腾讯财经 · HN · 华尔街见闻</span>
+    </footer>
   </div>
 </body>
 </html>
