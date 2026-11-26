@@ -477,12 +477,13 @@ export default {
       return;
     }
     const modeByCron = {
-      "1 16 * * *": "evening",
+      "55 15 * * *": "evening",
       "45 23 * * *": "morning",
       "45 4 * * *": "midday",
       "45 11 * * *": "evening",
     };
     const mode = modeByCron[event.cron] || "auto";
+    const dateOffset = event.cron === "55 15 * * *" ? "1" : "0";
     const resp = await fetch(
       "https://api.github.com/repos/Lightningxxl/e1002-news-board/actions/workflows/update.yml/dispatches",
       {
@@ -493,7 +494,7 @@ export default {
           "User-Agent": "e1002-board-worker/1.0",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ref: "main", inputs: { mode } }),
+        body: JSON.stringify({ ref: "main", inputs: { mode, date_offset: dateOffset } }),
       }
     );
     if (!resp.ok) {

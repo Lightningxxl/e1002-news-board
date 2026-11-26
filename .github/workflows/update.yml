@@ -14,6 +14,10 @@ on:
           - morning
           - midday
           - evening
+      date_offset:
+        description: "Calendar date offset in days"
+        required: false
+        default: "0"
 
 permissions:
   contents: write
@@ -41,7 +45,8 @@ jobs:
       - name: Generate 800x480 Spectra 6 Board PNG
         env:
           BOARD_MODE: ${{ inputs.mode || 'auto' }}
-        run: python3 scripts/generate_board.py --mode "$BOARD_MODE"
+          BOARD_DATE_OFFSET: ${{ inputs.date_offset || '0' }}
+        run: python3 scripts/generate_board.py --mode "$BOARD_MODE" --date-offset "$BOARD_DATE_OFFSET"
 
       - name: Commit updated image
         run: |

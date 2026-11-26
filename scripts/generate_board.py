@@ -1045,9 +1045,15 @@ def main() -> None:
         default=os.environ.get("BOARD_MODE", "auto"),
         help="Board layout mode (default: auto by CST hour; 'all' renders all 3 previews too).",
     )
+    parser.add_argument(
+        "--date-offset",
+        type=int,
+        default=int(os.environ.get("BOARD_DATE_OFFSET", "0")),
+        help="Calendar date offset in days (used to pre-render the next day before midnight).",
+    )
     args = parser.parse_args()
 
-    now = datetime.now(CST)
+    now = datetime.now(CST) + timedelta(days=args.date_offset)
     us_rows, cn_rows = fetch_markets()
     us_news, cn_news, hn_items = fetch_news()
 
