@@ -477,6 +477,7 @@ export default {
       return;
     }
     const modeByCron = {
+      "1 16 * * *": "evening",
       "45 23 * * *": "morning",
       "45 4 * * *": "midday",
       "45 11 * * *": "evening",

@@ -8,8 +8,8 @@ routes = [
 ]
 
 [triggers]
-# 07:45 CST (23:45 UTC), 12:45 CST (04:45 UTC), 19:45 CST (11:45 UTC)
-crons = ["45 23 * * *", "45 4 * * *", "45 11 * * *"]
+# 00:01 CST (16:01 UTC) date rollover, then 07:45 / 12:45 / 19:45 CST
+crons = ["1 16 * * *", "45 23 * * *", "45 4 * * *", "45 11 * * *"]
 
 [[kv_namespaces]]
 binding = "SENSORS_KV"
