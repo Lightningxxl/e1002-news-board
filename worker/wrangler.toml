@@ -8,8 +8,8 @@ routes = [
 ]
 
 [triggers]
-# 23:55 CST (15:55 UTC) pre-renders tomorrow, then 07:45 / 12:45 / 19:45 CST
-crons = ["55 15 * * *", "45 23 * * *", "45 4 * * *", "45 11 * * *"]
+# 23:55 CST (15:55 UTC) pre-renders tomorrow, then 07:45 / 12:45 / 21:45 CST
+crons = ["55 15 * * *", "45 23 * * *", "45 4 * * *", "45 13 * * *"]
 
 [[kv_namespaces]]
 binding = "SENSORS_KV"

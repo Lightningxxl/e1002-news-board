@@ -480,7 +480,7 @@ export default {
       "55 15 * * *": "evening",
       "45 23 * * *": "morning",
       "45 4 * * *": "midday",
-      "45 11 * * *": "evening",
+      "45 13 * * *": "evening",
     };
     const mode = modeByCron[event.cron] || "auto";
     const dateOffset = event.cron === "55 15 * * *" ? "1" : "0";
